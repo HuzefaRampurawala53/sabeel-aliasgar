@@ -45,12 +45,19 @@ export const queryRun = async (sql, params = []) => {
   let pgSql = convertSql(sql);
   
   // If it's an INSERT query and doesn't contain RETURNING, append RETURNING id
+  // Note: daily_summaries has summary_date as primary key instead of id
   if (pgSql.trim().toUpperCase().startsWith('INSERT INTO') && !pgSql.toUpperCase().includes('RETURNING')) {
-    pgSql += ' RETURNING id';
+    if (pgSql.toLowerCase().includes('daily_summaries')) {
+      pgSql += ' RETURNING summary_date';
+    } else {
+      pgSql += ' RETURNING id';
+    }
   }
   
   const res = await pool.query(pgSql, params);
-  const lastID = res.rows[0] ? res.rows[0].id : null;
+  const lastID = res.rows[0] 
+    ? (res.rows[0].id !== undefined ? res.rows[0].id : res.rows[0].summary_date) 
+    : null;
   return {
     lastID,
     changes: res.rowCount

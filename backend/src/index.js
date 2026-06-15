@@ -2,11 +2,10 @@ import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
-import path from 'path';
-import { fileURLToPath } from 'url';
 
 // Import configs & routes
 import db, { queryGet } from './config/db.js';
+import { getUploadsPath } from './utils/uploadStorage.js';
 import authRoutes from './routes/authRoutes.js';
 import expenseRoutes from './routes/expenseRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
@@ -18,16 +17,16 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// ESM absolute paths helpers
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 // Enable Middlewares
 app.use(cors());
 app.use(express.json());
 app.use(morgan('dev'));
 
-// Dynamic uploads serving from database (persistent storage)
+// Serve locally stored uploads first. Older proofs and local demo uploads live here.
+const uploadsPath = getUploadsPath();
+app.use('/uploads', express.static(uploadsPath));
+
+// Fall back to database-backed uploads for deployments with persistent DB storage.
 app.get('/uploads/:filename', async (req, res, next) => {
   try {
     const { filename } = req.params;
@@ -39,13 +38,9 @@ app.get('/uploads/:filename', async (req, res, next) => {
     res.send(file.data);
   } catch (err) {
     console.error('Error serving upload from DB:', err);
-    res.status(500).send('Internal server error');
+    next();
   }
 });
-
-// Static directories mapping
-const uploadsPath = path.join(__dirname, '../uploads');
-app.use('/uploads', express.static(uploadsPath));
 
 // API Routes mounting
 app.use('/api/auth', authRoutes);

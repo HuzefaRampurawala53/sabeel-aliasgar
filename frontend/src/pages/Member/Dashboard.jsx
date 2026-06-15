@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth, VITE_API_URL } from '../../context/AuthContext';
 import { 
-  LogOut, Plus, Receipt, History, User, CreditCard, 
-  TrendingUp, Wallet, Bell, CheckCircle, XCircle, AlertCircle, 
+  LogOut, Plus, Receipt, History, CreditCard, 
+  TrendingUp, Wallet, Bell, CheckCircle, AlertCircle, 
   FileText, Upload, Search, Check, Sun, Moon, HeartHandshake
 } from 'lucide-react';
 import axios from 'axios';
@@ -46,13 +46,7 @@ const MemberDashboard = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [darkMode, setDarkMode] = useState(false);
 
-  useEffect(() => {
-    fetchExpenses();
-    fetchDonations();
-    fetchNotifications();
-  }, [searchQuery]);
-
-  const fetchExpenses = async () => {
+  const fetchExpenses = useCallback(async () => {
     setLoadingExpenses(true);
     try {
       const params = {};
@@ -65,9 +59,9 @@ const MemberDashboard = () => {
     } finally {
       setLoadingExpenses(false);
     }
-  };
+  }, [searchQuery]);
 
-  const fetchDonations = async () => {
+  const fetchDonations = useCallback(async () => {
     setLoadingDonations(true);
     try {
       const res = await axios.get(`${VITE_API_URL}/donations`);
@@ -77,9 +71,9 @@ const MemberDashboard = () => {
     } finally {
       setLoadingDonations(false);
     }
-  };
+  }, []);
 
-  const fetchNotifications = async () => {
+  const fetchNotifications = useCallback(async () => {
     try {
       const res = await axios.get(`${VITE_API_URL}/notifications`);
       setNotifications(res.data);
@@ -87,7 +81,13 @@ const MemberDashboard = () => {
     } catch (err) {
       console.error('Error fetching notifications:', err);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchExpenses();
+    fetchDonations();
+    fetchNotifications();
+  }, [fetchExpenses, fetchDonations, fetchNotifications]);
 
   const handleMarkAsRead = async (id) => {
     try {
@@ -483,9 +483,9 @@ const MemberDashboard = () => {
               </button>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 w-full md:w-auto">
               {/* Search Bar */}
-              <div className="relative">
+              <div className="relative w-full md:w-auto">
                 <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-neutral-400">
                   <Search size={14} />
                 </span>
@@ -494,7 +494,7 @@ const MemberDashboard = () => {
                   placeholder={activeLedgerTab === 'expenses' ? "Search item name..." : "Search donor name..."}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-8 pr-4 py-1.5 bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-lg text-xs w-48 text-neutral-800 dark:text-neutral-100 focus:outline-none focus:border-brand-green-medium"
+                  className="w-full md:w-48 pl-8 pr-4 py-2 bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-lg text-xs text-neutral-800 dark:text-neutral-100 focus:outline-none focus:border-brand-green-medium"
                 />
               </div>
             </div>
@@ -513,7 +513,7 @@ const MemberDashboard = () => {
               </div>
             ) : (
               <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
+                <table className="w-full min-w-[760px] text-left border-collapse">
                   <thead>
                     <tr className="bg-neutral-50 dark:bg-neutral-800 text-[10px] uppercase font-bold text-neutral-400 dark:text-neutral-400 tracking-wider border-b border-neutral-100 dark:border-neutral-800">
                       <th className="px-6 py-4">Item Name</th>
@@ -549,7 +549,7 @@ const MemberDashboard = () => {
                               href={`${VITE_BACKEND_URL}${exp.proof_url}`}
                               target="_blank" 
                               rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1.5 text-xs text-brand-green-medium hover:text-brand-green-dark hover:underline font-medium"
+                              className="inline-flex items-center gap-1.5 rounded-lg border border-brand-green-medium/20 px-2.5 py-1.5 text-xs text-brand-green-medium hover:text-brand-green-dark hover:bg-brand-green-medium/5 font-bold"
                             >
                               <FileText size={14} /> View Proof
                             </a>
@@ -586,7 +586,7 @@ const MemberDashboard = () => {
               </div>
             ) : (
               <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
+                <table className="w-full min-w-[680px] text-left border-collapse">
                   <thead>
                     <tr className="bg-neutral-50 dark:bg-neutral-800 text-[10px] uppercase font-bold text-neutral-400 dark:text-neutral-400 tracking-wider border-b border-neutral-100 dark:border-neutral-800">
                       <th className="px-6 py-4">Donor Name</th>
@@ -614,7 +614,7 @@ const MemberDashboard = () => {
                               href={`${VITE_BACKEND_URL}${d.proof_url}`}
                               target="_blank" 
                               rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1.5 text-xs text-brand-green-medium hover:text-brand-green-dark hover:underline font-medium"
+                              className="inline-flex items-center gap-1.5 rounded-lg border border-brand-green-medium/20 px-2.5 py-1.5 text-xs text-brand-green-medium hover:text-brand-green-dark hover:bg-brand-green-medium/5 font-bold"
                             >
                               <FileText size={14} /> View Proof
                             </a>
@@ -645,8 +645,8 @@ const MemberDashboard = () => {
 
       {/* ADD EXPENSE MODAL */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 overflow-y-auto bg-neutral-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-neutral-900 w-full max-w-md rounded-2xl shadow-2xl overflow-hidden border border-neutral-100 dark:border-neutral-800 animate-fade-in my-8 text-neutral-800 dark:text-neutral-100">
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-neutral-900/60 backdrop-blur-sm flex items-start sm:items-center justify-center p-3 sm:p-4">
+          <div className="bg-white dark:bg-neutral-900 w-full max-w-md rounded-2xl shadow-2xl overflow-hidden border border-neutral-100 dark:border-neutral-800 animate-fade-in my-4 sm:my-8 text-neutral-800 dark:text-neutral-100">
             <div className="bg-brand-green-medium text-white px-6 py-4 flex items-center justify-between">
               <h3 className="font-bold text-lg flex items-center gap-2">
                 <Receipt size={20} /> Add Expense
@@ -698,7 +698,7 @@ const MemberDashboard = () => {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-semibold text-neutral-500 dark:text-neutral-400 mb-1">Price (₹) *</label>
                   <input
@@ -763,18 +763,18 @@ const MemberDashboard = () => {
                 )}
               </div>
 
-              <div className="pt-2 flex items-center justify-end gap-3">
+              <div className="pt-2 flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end gap-3">
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
-                  className="px-4 py-2 text-neutral-550 dark:text-neutral-450 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-xl text-sm font-semibold transition-colors cursor-pointer"
+                  className="w-full sm:w-auto px-4 py-2 text-neutral-550 dark:text-neutral-450 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-xl text-sm font-semibold transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submittingExpense}
-                  className="px-5 py-2.5 bg-brand-green-medium hover:bg-brand-green-dark text-white rounded-xl text-sm font-semibold shadow-md cursor-pointer disabled:bg-neutral-300 disabled:cursor-not-allowed transition-all"
+                  className="w-full sm:w-auto px-5 py-2.5 bg-brand-green-medium hover:bg-brand-green-dark text-white rounded-xl text-sm font-semibold shadow-md cursor-pointer disabled:bg-neutral-300 disabled:cursor-not-allowed transition-all"
                 >
                   {submittingExpense ? 'Submitting...' : 'Request Approval'}
                 </button>
@@ -787,8 +787,8 @@ const MemberDashboard = () => {
 
       {/* LOG DONATION MODAL */}
       {showDonationModal && (
-        <div className="fixed inset-0 z-50 overflow-y-auto bg-neutral-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-neutral-900 w-full max-w-md rounded-2xl shadow-2xl overflow-hidden border border-neutral-100 dark:border-neutral-800 animate-fade-in my-8 text-neutral-800 dark:text-neutral-100">
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-neutral-900/60 backdrop-blur-sm flex items-start sm:items-center justify-center p-3 sm:p-4">
+          <div className="bg-white dark:bg-neutral-900 w-full max-w-md rounded-2xl shadow-2xl overflow-hidden border border-neutral-100 dark:border-neutral-800 animate-fade-in my-4 sm:my-8 text-neutral-800 dark:text-neutral-100">
             <div className="bg-brand-red-medium text-white px-6 py-4 flex items-center justify-between">
               <h3 className="font-bold text-lg flex items-center gap-2">
                 <HeartHandshake size={20} /> Log Donation
@@ -880,7 +880,7 @@ const MemberDashboard = () => {
                 )}
               </div>
 
-              <div className="pt-2 flex items-center justify-end gap-3">
+              <div className="pt-2 flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end gap-3">
                 <button
                   type="button"
                   onClick={() => setShowDonationModal(false)}

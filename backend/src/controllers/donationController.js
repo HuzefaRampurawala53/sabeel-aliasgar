@@ -1,5 +1,6 @@
 import { queryRun, queryAll, queryGet } from '../config/db.js';
 import { recalculateDailySummary } from './expenseController.js';
+import { saveUploadToDisk } from '../utils/uploadStorage.js';
 
 // Get own donations for logged-in member
 export const getOwnDonations = async (req, res) => {
@@ -46,6 +47,7 @@ export const createDonation = async (req, res) => {
 
   try {
     if (req.file) {
+      await saveUploadToDisk(req.file);
       await queryRun(
         'INSERT INTO uploads (filename, mimetype, data) VALUES (?, ?, ?)',
         [req.file.filename, req.file.mimetype, req.file.buffer]

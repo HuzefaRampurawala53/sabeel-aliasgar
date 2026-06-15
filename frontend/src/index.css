@@ -53,6 +53,28 @@ body {
   opacity: 0.02;
 }
 
+/* Login inputs keep typed/autofilled credentials readable in every theme. */
+.login-input {
+  background-color: #ffffff !important;
+  color: #111827 !important;
+  caret-color: #065F46;
+}
+
+.login-input::placeholder {
+  color: #9CA3AF !important;
+  opacity: 1;
+}
+
+.dark .login-input {
+  background-color: #262626 !important;
+  color: #ffffff !important;
+  caret-color: #FAF9F6;
+}
+
+.dark .login-input::placeholder {
+  color: #737373 !important;
+}
+
 /* Webkit Autofill Styling */
 input:-webkit-autofill,
 input:-webkit-autofill:hover, 
@@ -61,6 +83,15 @@ input:-webkit-autofill:active {
   -webkit-box-shadow: 0 0 0 1000px white inset !important;
   -webkit-text-fill-color: #111827 !important; /* text-neutral-900 */
   transition: background-color 5000s ease-in-out 0s;
+}
+
+.login-input:-webkit-autofill,
+.login-input:-webkit-autofill:hover,
+.login-input:-webkit-autofill:focus,
+.login-input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
+  -webkit-text-fill-color: #111827 !important;
+  caret-color: #065F46 !important;
 }
 
 /* If dark mode is active via media query OR class */
@@ -82,3 +113,11 @@ input:-webkit-autofill:active {
   -webkit-text-fill-color: #ffffff !important;
 }
 
+.dark .login-input:-webkit-autofill,
+.dark .login-input:-webkit-autofill:hover,
+.dark .login-input:-webkit-autofill:focus,
+.dark .login-input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #262626 inset !important;
+  -webkit-text-fill-color: #ffffff !important;
+  caret-color: #FAF9F6 !important;
+}

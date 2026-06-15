@@ -1,8 +1,9 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
+import { createContext, useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 
 const AuthContext = createContext(null);
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const VITE_API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 // Set default axios headers
@@ -61,9 +62,10 @@ export const AuthProvider = ({ children }) => {
       setUser(receivedUser);
       return receivedUser;
     } catch (err) {
-      const msg = err.response?.data?.message || 'Login failed. Please verify credentials.';
+      const msg = err.response?.data?.message
+        || (err.request ? 'Backend server is not running. Start the server and try again.' : 'Login failed. Please verify credentials.');
       setError(msg);
-      throw new Error(msg);
+      throw new Error(msg, { cause: err });
     }
   };
 
@@ -96,6 +98,7 @@ export const AuthProvider = ({ children }) => {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {

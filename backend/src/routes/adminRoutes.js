@@ -10,7 +10,7 @@ import {
   restoreDatabase,
   toggleMemberSettlement
 } from '../controllers/adminController.js';
-import { getAllExpenses, updateExpenseStatus } from '../controllers/expenseController.js';
+import { getAllExpenses, updateExpenseStatus, deleteExpense } from '../controllers/expenseController.js';
 import { exportExcelReport, exportCSVReport } from '../controllers/reportsController.js';
 import { authenticateToken, requireRole } from '../middleware/auth.js';
 
@@ -30,6 +30,7 @@ router.put('/members/:id/settle', toggleMemberSettlement);
 // Expense review & actions
 router.get('/expenses', getAllExpenses);
 router.put('/expenses/:id/status', updateExpenseStatus);
+router.delete('/expenses/:id', deleteExpense);
 
 // Analytics & Financial reports
 router.get('/settlements', getSettlements);

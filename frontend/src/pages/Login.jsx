@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { KeyRound, User, AlertCircle, HeartHandshake } from 'lucide-react';
@@ -102,7 +102,7 @@ const Login = () => {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="e.g. member_a or admin"
-                  className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-xl text-neutral-900 dark:text-white focus:outline-none focus:border-brand-green-medium focus:bg-white dark:focus:bg-neutral-850 transition-all text-sm placeholder-neutral-400 dark:placeholder-neutral-500"
+                  className="login-input w-full pl-10 pr-4 py-2.5 border border-neutral-200 dark:border-neutral-700 rounded-xl focus:outline-none focus:border-brand-green-medium transition-all text-sm"
                 />
               </div>
             </div>
@@ -119,7 +119,7 @@ const Login = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-xl text-neutral-900 dark:text-white focus:outline-none focus:border-brand-green-medium focus:bg-white dark:focus:bg-neutral-850 transition-all text-sm placeholder-neutral-400 dark:placeholder-neutral-500"
+                  className="login-input w-full pl-10 pr-4 py-2.5 border border-neutral-200 dark:border-neutral-700 rounded-xl focus:outline-none focus:border-brand-green-medium transition-all text-sm"
                 />
               </div>
             </div>

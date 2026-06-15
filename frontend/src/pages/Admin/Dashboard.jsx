@@ -1,10 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth, VITE_API_URL } from '../../context/AuthContext';
 import { 
-  LogOut, Shield, Users, Wallet, TrendingUp, AlertCircle, 
-  CreditCard, Check, X, FileSpreadsheet, Download, RefreshCw, 
-  Trash2, UserPlus, Eye, Calendar, DollarSign, Database, 
-  ChevronRight, CheckCircle2, XCircle, Sun, Moon, Edit3, FileText, HeartHandshake
+  LogOut, AlertCircle, Check, X, FileSpreadsheet, Download, RefreshCw, 
+  Trash2, UserPlus, Eye, Database, Sun, Moon, Edit3, FileText, HeartHandshake
 } from 'lucide-react';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, PieChart, Pie, Cell } from 'recharts';
 import axios from 'axios';
@@ -51,7 +49,7 @@ const AdminDashboard = () => {
     fetchDashboardData();
   }, []);
 
-  const fetchDashboardData = async () => {
+  async function fetchDashboardData() {
     setLoading(true);
     try {
       const token = localStorage.getItem('sabeel_token');
@@ -75,7 +73,7 @@ const AdminDashboard = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   // Expense Approvals Actions
   const handleApproveExpense = async (id) => {
@@ -101,6 +99,20 @@ const AdminDashboard = () => {
     } catch (err) {
       console.error('Error rejecting expense:', err);
       alert(err.response?.data?.message || 'Error rejecting expense');
+    }
+  };
+
+  const handleDeleteExpense = async (id) => {
+    if (!window.confirm('Are you sure you want to permanently delete this expense? This will recalculate the daily balances.')) return;
+    try {
+      const token = localStorage.getItem('sabeel_token');
+      await axios.delete(`${VITE_API_URL}/admin/expenses/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      fetchDashboardData();
+    } catch (err) {
+      console.error('Error deleting expense:', err);
+      alert(err.response?.data?.message || 'Error deleting expense');
     }
   };
 
@@ -375,7 +387,7 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className={`min-h-screen bg-brand-cream text-neutral-800 flex flex-col ${darkMode ? 'dark text-neutral-200 bg-neutral-950' : ''}`}>
+    <div aria-busy={loading} className={`min-h-screen bg-brand-cream text-neutral-800 flex flex-col ${darkMode ? 'dark text-neutral-200 bg-neutral-950' : ''}`}>
       <div className="absolute inset-0 bg-islamic-pattern opacity-5 dark:opacity-2 pointer-events-none"></div>
 
       {/* TOP HEADER */}
@@ -616,7 +628,7 @@ const AdminDashboard = () => {
                   <p className="text-center text-sm py-12 text-neutral-400 dark:text-neutral-500">No expense logs submitted yet.</p>
                 ) : (
                   <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
+                    <table className="w-full min-w-[980px] text-left border-collapse">
                       <thead>
                         <tr className="text-[10px] uppercase font-bold text-neutral-400 dark:text-neutral-400 tracking-wider border-b border-neutral-100 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-850">
                           <th className="px-4 py-3">Member Name</th>
@@ -658,7 +670,7 @@ const AdminDashboard = () => {
                                   href={`${VITE_BACKEND_URL}${exp.proof_url}`}
                                   target="_blank" 
                                   rel="noopener noreferrer"
-                                  className="text-[11px] text-brand-green-medium hover:underline inline-flex items-center gap-0.5 mt-0.5 font-medium"
+                                  className="text-[11px] text-brand-green-medium inline-flex items-center gap-1 mt-0.5 font-bold rounded-lg border border-brand-green-medium/20 px-2.5 py-1.5 hover:bg-brand-green-medium/5"
                                 >
                                   <Eye size={10} /> View Proof
                                 </a>
@@ -679,7 +691,7 @@ const AdminDashboard = () => {
                             </td>
                             <td className="px-4 py-4 text-right">
                               {exp.approval_status === 'Pending' ? (
-                                <div className="inline-flex gap-1.5">
+                                <div className="inline-flex items-center gap-1.5">
                                   <button
                                     onClick={() => handleApproveExpense(exp.id)}
                                     className="px-2.5 py-1.5 bg-brand-green-medium hover:bg-brand-green-dark text-white rounded-lg text-xs font-bold shadow-sm cursor-pointer transition-colors"
@@ -694,9 +706,25 @@ const AdminDashboard = () => {
                                   >
                                     Cancel
                                   </button>
+                                  <button
+                                    onClick={() => handleDeleteExpense(exp.id)}
+                                    className="p-1.5 bg-red-50 hover:bg-red-100 text-red-600 dark:bg-red-950/20 rounded-lg cursor-pointer transition-colors"
+                                    title="Delete expense"
+                                  >
+                                    <Trash2 size={14} />
+                                  </button>
                                 </div>
                               ) : (
-                                <span className="text-[10px] text-neutral-400 dark:text-neutral-550 italic">Audited</span>
+                                <div className="inline-flex items-center gap-2">
+                                  <span className="text-[10px] text-neutral-400 dark:text-neutral-550 italic mr-1">Audited</span>
+                                  <button
+                                    onClick={() => handleDeleteExpense(exp.id)}
+                                    className="p-1.5 bg-red-50 hover:bg-red-100 text-red-600 dark:bg-red-950/20 rounded-lg cursor-pointer transition-colors"
+                                    title="Delete expense"
+                                  >
+                                    <Trash2 size={14} />
+                                  </button>
+                                </div>
                               )}
                             </td>
                           </tr>
@@ -720,7 +748,7 @@ const AdminDashboard = () => {
                   <p className="text-center text-sm py-12 text-neutral-400 dark:text-neutral-550">No donations logged yet.</p>
                 ) : (
                   <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
+                    <table className="w-full min-w-[860px] text-left border-collapse">
                       <thead>
                         <tr className="text-[10px] uppercase font-bold text-neutral-400 dark:text-neutral-400 tracking-wider border-b border-neutral-100 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-850">
                           <th className="px-4 py-3">Logged By</th>
@@ -754,7 +782,7 @@ const AdminDashboard = () => {
                                   href={`${VITE_BACKEND_URL}${d.proof_url}`}
                                   target="_blank" 
                                   rel="noopener noreferrer"
-                                  className="text-[11px] text-brand-green-medium hover:underline inline-flex items-center gap-0.5 mt-0.5 font-medium"
+                                  className="text-[11px] text-brand-green-medium inline-flex items-center gap-1 mt-0.5 font-bold rounded-lg border border-brand-green-medium/20 px-2.5 py-1.5 hover:bg-brand-green-medium/5"
                                 >
                                   <Eye size={10} /> View Proof
                                 </a>
@@ -1041,16 +1069,16 @@ const AdminDashboard = () => {
                 Warning: Restoring will overwrite all existing tables with data contained in the uploaded JSON backup file.
               </p>
 
-              <form onSubmit={handleRestoreUpload} className="flex items-center gap-2">
+              <form onSubmit={handleRestoreUpload} className="flex flex-col sm:flex-row sm:items-center gap-2">
                 <input 
                   type="file" 
                   accept=".json"
                   onChange={(e) => setBackupFile(e.target.files?.[0] || null)}
-                  className="text-xs file:bg-white dark:file:bg-neutral-900 file:border file:border-neutral-200 dark:file:border-neutral-700 file:px-2 file:py-1 file:rounded file:text-[10px] file:font-bold file:cursor-pointer dark:text-neutral-100"
+                  className="w-full min-w-0 text-xs file:bg-white dark:file:bg-neutral-900 file:border file:border-neutral-200 dark:file:border-neutral-700 file:px-2 file:py-1 file:rounded file:text-[10px] file:font-bold file:cursor-pointer dark:text-neutral-100"
                 />
                 <button
                   type="submit"
-                  className="px-3 py-1.5 bg-neutral-800 dark:bg-neutral-200 dark:text-neutral-900 text-white hover:bg-neutral-700 rounded-lg text-[10px] font-bold cursor-pointer"
+                  className="w-full sm:w-auto px-3 py-2 bg-neutral-800 dark:bg-neutral-200 dark:text-neutral-900 text-white hover:bg-neutral-700 rounded-lg text-[10px] font-bold cursor-pointer"
                 >
                   Import
                 </button>

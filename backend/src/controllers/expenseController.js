@@ -1,4 +1,5 @@
 import { queryRun, queryAll, queryGet } from '../config/db.js';
+import { deleteUploadFromDisk, saveUploadToDisk } from '../utils/uploadStorage.js';
 
 // Get own expenses for logged-in member
 export const getOwnExpenses = async (req, res) => {
@@ -80,6 +81,7 @@ export const createExpense = async (req, res) => {
 
   try {
     if (req.file) {
+      await saveUploadToDisk(req.file);
       await queryRun(
         'INSERT INTO uploads (filename, mimetype, data) VALUES (?, ?, ?)',
         [req.file.filename, req.file.mimetype, req.file.buffer]
@@ -252,6 +254,60 @@ export const updateExpenseStatus = async (req, res) => {
 
   } catch (error) {
     console.error('Error updating expense status:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+// Admin: Delete Expense
+export const deleteExpense = async (req, res) => {
+  const { id } = req.params;
+  const adminId = req.user.id;
+
+  try {
+    // 1. Get the expense details
+    const expense = await queryGet('SELECT * FROM expenses WHERE id = ?', [id]);
+
+    if (!expense) {
+      return res.status(404).json({ message: 'Expense not found' });
+    }
+
+    // 2. Delete the expense
+    await queryRun('DELETE FROM expenses WHERE id = ?', [id]);
+
+    // 3. Delete the uploaded proof if exists
+    if (expense.proof_url && expense.proof_url.startsWith('/uploads/')) {
+      const filename = expense.proof_url.substring('/uploads/'.length);
+      await queryRun('DELETE FROM uploads WHERE filename = ?', [filename]);
+      await deleteUploadFromDisk(filename);
+    }
+
+    // 4. Create notification for the member who submitted it
+    await queryRun(
+      'INSERT INTO notifications (user_id, title, message) VALUES (?, ?, ?)',
+      [
+        expense.member_id,
+        'Expense Deleted by Admin',
+        `Your expense of ₹${expense.amount} for "${expense.item_purchased}" has been deleted by the admin.`
+      ]
+    );
+
+    // 5. Log Action
+    await queryRun(
+      'INSERT INTO audit_logs (user_id, action, details) VALUES (?, ?, ?)',
+      [
+        adminId,
+        'Delete Expense',
+        `Deleted expense ID ${id} of amount ₹${expense.amount} submitted by user ID ${expense.member_id}`
+      ]
+    );
+
+    // 6. Recalculate daily summary for the expense's purchase date
+    await recalculateDailySummary(expense.purchase_date);
+
+    res.status(200).json({ message: 'Expense deleted successfully' });
+
+  } catch (error) {
+    console.error('Error deleting expense:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
