@@ -61,9 +61,8 @@ const Login = () => {
           ✦ Sabeel E Aliasgar Management Portal ✦
         </span>
       </div>
-
-      <div className="flex-1 flex items-center justify-center py-12 relative z-10">
-        <div className="w-full max-w-md bg-white dark:bg-neutral-900 rounded-2xl shadow-xl border border-neutral-100 dark:border-neutral-800 p-8 animate-fade-in text-neutral-800 dark:text-neutral-200">
+      <div className="flex-1 flex items-center justify-center py-6 sm:py-12 relative z-10">
+        <div className="w-full max-w-md bg-white dark:bg-neutral-900 rounded-2xl shadow-xl border border-neutral-100 dark:border-neutral-800 p-6 sm:p-8 animate-fade-in text-neutral-800 dark:text-neutral-200">
           
           {/* Logo / Branding */}
           <div className="text-center mb-8">
@@ -133,23 +132,6 @@ const Login = () => {
               {submitting ? 'Signing In...' : 'Sign In'}
             </button>
           </form>
-
-          {/* Test Credentials Guideline */}
-          <div className="mt-8 pt-6 border-t border-neutral-100 dark:border-neutral-850 text-center text-[10px] text-neutral-400 dark:text-neutral-500 leading-relaxed">
-            <div className="font-semibold uppercase tracking-wider mb-2">Demo Login Accounts</div>
-            <div className="grid grid-cols-2 gap-2 bg-neutral-50 dark:bg-neutral-800/40 p-2.5 rounded-xl border border-neutral-100 dark:border-neutral-800">
-              <div>
-                <p className="font-bold text-neutral-650 dark:text-neutral-405">Volunteers (Member)</p>
-                <p>User: <code className="bg-white dark:bg-neutral-900 px-1 py-0.5 rounded text-[9px]">member_a</code></p>
-                <p>Pass: <code className="bg-white dark:bg-neutral-900 px-1 py-0.5 rounded text-[9px]">member123</code></p>
-              </div>
-              <div className="border-l border-neutral-200 dark:border-neutral-700 pl-2">
-                <p className="font-bold text-neutral-650 dark:text-neutral-405">Organizers (Admin)</p>
-                <p>User: <code className="bg-white dark:bg-neutral-900 px-1 py-0.5 rounded text-[9px]">admin</code></p>
-                <p>Pass: <code className="bg-white dark:bg-neutral-900 px-1 py-0.5 rounded text-[9px]">admin123</code></p>
-              </div>
-            </div>
-          </div>
 
         </div>
       </div>
