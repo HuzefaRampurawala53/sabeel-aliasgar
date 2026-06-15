@@ -10,6 +10,7 @@ import sabeelLogo from '../../assets/sabeel_logo.jpg';
 
 const MemberDashboard = () => {
   const { user, logout, refreshUser } = useAuth();
+  const VITE_BACKEND_URL = VITE_API_URL.replace('/api', '');
   const [expenses, setExpenses] = useState([]);
   const [notifications, setNotifications] = useState([]);
   const [loadingExpenses, setLoadingExpenses] = useState(true);
@@ -545,7 +546,7 @@ const MemberDashboard = () => {
                         <td className="px-6 py-4">
                           {exp.proof_url ? (
                             <a 
-                              href={`http://localhost:5000${exp.proof_url}`}
+                              href={`${VITE_BACKEND_URL}${exp.proof_url}`}
                               target="_blank" 
                               rel="noopener noreferrer"
                               className="inline-flex items-center gap-1.5 text-xs text-brand-green-medium hover:text-brand-green-dark hover:underline font-medium"
@@ -610,7 +611,7 @@ const MemberDashboard = () => {
                         <td className="px-6 py-4">
                           {d.proof_url ? (
                             <a 
-                              href={`http://localhost:5000${d.proof_url}`}
+                              href={`${VITE_BACKEND_URL}${d.proof_url}`}
                               target="_blank" 
                               rel="noopener noreferrer"
                               className="inline-flex items-center gap-1.5 text-xs text-brand-green-medium hover:text-brand-green-dark hover:underline font-medium"
