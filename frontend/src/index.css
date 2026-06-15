@@ -52,3 +52,33 @@ body {
   background-image: radial-gradient(#ffffff 0.5px, transparent 0.5px), radial-gradient(#ffffff 0.5px, #121212 0.5px);
   opacity: 0.02;
 }
+
+/* Webkit Autofill Styling */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px white inset !important;
+  -webkit-text-fill-color: #111827 !important; /* text-neutral-900 */
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* If dark mode is active via media query OR class */
+@media (prefers-color-scheme: dark) {
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover, 
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 1000px #262626 inset !important; /* bg-neutral-800 */
+    -webkit-text-fill-color: #ffffff !important;
+  }
+}
+
+.dark input:-webkit-autofill,
+.dark input:-webkit-autofill:hover, 
+.dark input:-webkit-autofill:focus,
+.dark input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #262626 inset !important; /* bg-neutral-800 */
+  -webkit-text-fill-color: #ffffff !important;
+}
+

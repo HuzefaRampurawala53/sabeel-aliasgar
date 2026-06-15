@@ -51,7 +51,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-between bg-brand-cream relative px-4">
+    <div className="min-h-screen flex flex-col justify-between bg-brand-cream dark:bg-neutral-950 relative px-4">
       {/* Background Ornament */}
       <div className="absolute inset-0 bg-islamic-pattern pointer-events-none opacity-5"></div>
 
