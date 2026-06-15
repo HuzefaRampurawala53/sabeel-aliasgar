@@ -1,0 +1,24 @@
+# Dependency directories
+node_modules/
+backend/node_modules/
+frontend/node_modules/
+
+# Environment files
+.env
+backend/.env
+frontend/.env
+
+# Local upload proofs and database backups
+uploads/
+backend/uploads/
+*.db
+*.log
+sabeel_backup.json
+
+# Local build outputs
+frontend/dist/
+dist/
+
+# OS metadata
+.DS_Store
+Thumbs.db
