@@ -28,7 +28,7 @@ app.use(express.json());
 app.use(morgan('dev'));
 
 // Static directories mapping
-const uploadsPath = path.join(__dirname, '../../uploads');
+const uploadsPath = path.join(__dirname, '../uploads');
 app.use('/uploads', express.static(uploadsPath));
 
 // API Routes mounting
