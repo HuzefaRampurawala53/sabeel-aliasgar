@@ -27,6 +27,22 @@ app.use(cors());
 app.use(express.json());
 app.use(morgan('dev'));
 
+// Dynamic uploads serving from database (persistent storage)
+app.get('/uploads/:filename', async (req, res, next) => {
+  try {
+    const { filename } = req.params;
+    const file = await queryGet('SELECT mimetype, data FROM uploads WHERE filename = $1', [filename]);
+    if (!file) {
+      return next(); // Fallback to local filesystem static serving
+    }
+    res.setHeader('Content-Type', file.mimetype);
+    res.send(file.data);
+  } catch (err) {
+    console.error('Error serving upload from DB:', err);
+    res.status(500).send('Internal server error');
+  }
+});
+
 // Static directories mapping
 const uploadsPath = path.join(__dirname, '../uploads');
 app.use('/uploads', express.static(uploadsPath));

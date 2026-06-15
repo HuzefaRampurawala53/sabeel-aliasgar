@@ -79,6 +79,13 @@ export const createExpense = async (req, res) => {
   }
 
   try {
+    if (req.file) {
+      await queryRun(
+        'INSERT INTO uploads (filename, mimetype, data) VALUES (?, ?, ?)',
+        [req.file.filename, req.file.mimetype, req.file.buffer]
+      );
+    }
+
     // 1. Insert expense
     const result = await queryRun(
       `INSERT INTO expenses (

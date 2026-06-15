@@ -45,6 +45,13 @@ export const createDonation = async (req, res) => {
   }
 
   try {
+    if (req.file) {
+      await queryRun(
+        'INSERT INTO uploads (filename, mimetype, data) VALUES (?, ?, ?)',
+        [req.file.filename, req.file.mimetype, req.file.buffer]
+      );
+    }
+
     const result = await queryRun(
       `INSERT INTO donations (member_id, donor_name, amount, payment_method, proof_url, approval_status)
        VALUES (?, ?, ?, ?, ?, ?)`,

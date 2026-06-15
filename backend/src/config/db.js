@@ -177,6 +177,17 @@ async function initializeDatabase() {
       )
     `);
 
+    // 7. Uploads Table
+    await queryRun(`
+      CREATE TABLE IF NOT EXISTS uploads (
+        id SERIAL PRIMARY KEY,
+        filename VARCHAR(255) UNIQUE NOT NULL,
+        mimetype VARCHAR(255) NOT NULL,
+        data BYTEA NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
     // Seed Default Users if empty
     const userCount = await queryGet('SELECT COUNT(*) as count FROM users');
     if (parseInt(userCount.count) === 0) {
